@@ -1,0 +1,30 @@
+digraph G {
+  graph [
+		rankdir=LR
+	];
+	node [color=blue,
+		fontcolor=green,
+		label="\N",
+		shape=record
+	];
+
+  subgraph cluster0 {
+    node [color=blue];
+    style=filled;
+    color=lightgrey;
+    //a0 -> a1 -> a2 -> a3;
+    a0 -> d0[color=blue, dir=both];
+    a1 -> d0[color=blue, dir=both];
+    a2 -> d0[color=blue, dir=both];
+    a3 -> d0[color=blue, dir=both];
+    label = "stat_instance";
+  }
+  a0 [shape=record, label="src-01"];
+  a1 [shape=record, label="src-02"];
+  a2 [shape=record, label="src-03"];
+  a3 [shape=record, label="src-04"];
+  d0 [shape=record, label="dst"];
+}
+  
+
+

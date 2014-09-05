@@ -1,0 +1,72 @@
+digraph G {
+  graph [
+		rankdir=LR
+	];
+	node [color=blue,
+		fontcolor=royalblue,
+		label="\N",
+		shape=plaintext,
+	];
+
+
+  net_ct [label=< <TABLE BORDER="0" CELLBORDER="1"  CELLSPACING="0">
+            <TR > <TD BGCOLOR="palegreen" PORT="f0">net_ct_hash</TD></TR>
+            <TR> <TD>...</TD></TR>
+            <TR> <TD PORT="f1">h1</TD></TR>
+            <TR> <TD>...</TD></TR>
+            <TR> <TD PORT="f2">h2</TD></TR>
+            <TR> <TD PORT="f3">h3</TD></TR>
+            <TR> <TD>...</TD></TR>
+            <TR> <TD PORT="f4">h4</TD></TR>
+            </TABLE> >];
+  
+  ct1 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td port="f0" bgcolor="palegreen"> ct1 </td></tr>
+            <tr > <td PORT="f1"> tunplehash_o</td></tr>
+            <tr > <td PORT="f2"> tunplehash_r</td></tr>
+            </table> >];
+ 
+  ct2 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td port="f0" bgcolor="palegreen"> ct2 </td></tr>
+            <tr > <td PORT="f1"> tunplehash_o</td></tr>
+            <tr > <td PORT="f2"> tunplehash_r</td></tr>
+            </table> >];
+
+  ct3 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td port="f0" bgcolor="palegreen"> ct3 </td></tr>
+            <tr > <td PORT="f1"> tunplehash_o</td></tr>
+            <tr > <td PORT="f2"> tunplehash_r</td></tr>
+            </table> >];
+
+
+  tunple_org_1 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green" colspan="3"> ct1_orig-nf_conntrack_tuple_hash </td></tr>
+            <tr > <td PORT="f1" colspan="3"> hnode </td></tr>
+            <tr > 
+              <td PORT="f2" rowspan="7" > tunple </td>
+              <td PORT="f3" rowspan="3" > src </td>
+              <td> src_ip(u3) </td>
+            </tr>
+            <tr><td> port(u) </td> </tr>
+            <tr><td> protocol(l3num)</td> </tr>
+            <tr>
+              <td PORT="f3" rowspan="4" > dst </td>
+              <td> dst_ip(u3) </td>
+            </tr>
+            <tr><td> port(u) </td></tr>
+            <tr><td> protocol</td></tr>
+            <tr><td> direction(dir) </td></tr>
+            </table>>];
+
+  struct1 [label=< <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0"> 
+              <TR><TD>left</TD>
+                <TD PORT="f1">mid dle</TD>
+                <TD PORT="f2">right</TD>
+              </TR> 
+            </TABLE>>]; 
+ 
+  ct1:f1 -> struct1:f1;
+  ct1:f1 -> tunple_org_1:f0;
+
+}
+
