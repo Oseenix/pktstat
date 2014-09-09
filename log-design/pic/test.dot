@@ -1,0 +1,230 @@
+digraph G {
+  graph [
+		rankdir=LR
+	];
+	node [
+		//fontcolor=royalblue,
+		//fontcolor=navy,
+    color=navy;
+		label="\N",
+		shape=plaintext,
+	];
+  edge [color=blue]
+
+  subgraph cluster0 {
+    node [color=navy];
+    edge [color=blue]
+    style=filled;
+    color=lightgrey;
+
+    ct1:f2 -> tunple_rep_1:f1;
+    ct1:f1 -> tunple_org_1:f1;
+
+    net_ct:f1 -> ct1:f1;
+    net_ct:f2 -> ct1:f2;
+
+    net_ct:f1 -> ct2:f1;
+    net_ct:f3 -> ct2:f2;
+
+    net_ct:f4 -> ct3:f1;
+    net_ct:f2 -> ct3:f2;
+
+    label = "conntrack";
+  }
+
+  subgraph cluster1 {
+    style=filled;
+    color=lightgrey;
+      label = "pkt-stat"
+  }
+
+    
+    match1:phlist -> match_dstip_hlist:f0;
+    match_dstip_hlist:h1 ->match_dstip_hnode:hnode;
+    match_dstip_hnode:phlist->match_proto_hlist:f0;
+    match_proto_hlist:h1->match_proto_hnode:hnode;
+    match_proto_hnode:phlist->match_port_hlist:f0;
+    match_port_hlist:h1->match_port_hnode:hnode;
+
+    edge [color=green];
+    conn_stat_ext:ext_list -> match_dstip_hnode:ext_list; 
+    match_dstip_hnode:ext_list-> match_proto_hnode:ext_list;
+    match_proto_hnode:ext_list-> match_port_hnode:ext_list;
+ 
+
+
+  net_ct [label=< <TABLE BORDER="0" CELLBORDER="1"  CELLSPACING="0">
+            <TR > <TD BGCOLOR="green" PORT="f0">net_ct_hash</TD></TR>
+            <TR> <TD>...</TD></TR>
+            <TR> <TD PORT="f1">h1</TD></TR>
+            <TR> <TD>...</TD></TR>
+            <TR> <TD PORT="f2">h2</TD></TR>
+            <TR> <TD PORT="f3">h3</TD></TR>
+            <TR> <TD>...</TD></TR>
+            <TR> <TD PORT="f4">h4</TD></TR>
+            </TABLE> >];
+  
+  ct1 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td port="f0" bgcolor="green"> ct1 </td></tr>
+            <tr > <td PORT="f1"> tunplehash_o</td></tr>
+            <tr > <td PORT="f2"> tunplehash_r</td></tr>
+            <tr > <td PORT="fx"> ...</td></tr>
+            <tr > <td PORT="fext"> ext </td></tr>
+            </table> >];
+ 
+  ct2 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td port="f0" bgcolor="green"> ct2 </td></tr>
+            <tr > <td PORT="f1"> tunplehash_o</td></tr>
+            <tr > <td PORT="f2"> tunplehash_r</td></tr>
+            <tr > <td PORT="fx"> ...</td></tr>
+            <tr > <td PORT="fext"> ext </td></tr>
+            </table> >];
+
+  ct3 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td port="f0" bgcolor="green"> ct3 </td></tr>
+            <tr > <td PORT="f1"> tunplehash_o</td></tr>
+            <tr > <td PORT="f2"> tunplehash_r</td></tr>
+            <tr > <td PORT="fx"> ...</td></tr>
+            <tr > <td PORT="fext"> ext </td></tr>
+            </table> >];
+
+
+
+  tunple_org_1 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green" colspan="3"> ct1_orig-nf_conntrack_tuple_hash </td></tr>
+            <tr > <td PORT="f1" colspan="3"> hnode </td></tr>
+            <tr > 
+              <td PORT="f2" rowspan="7" > tunple </td>
+              <td PORT="f3" rowspan="3" > src </td>
+              <td> src_ip(u3) </td>
+            </tr>
+            <tr><td> port(u) </td> </tr>
+            <tr><td> protocol(l3num)</td> </tr>
+            <tr>
+              <td PORT="f3" rowspan="4" > dst </td>
+              <td bgcolor="orangered"> dst_ip(u3) </td>
+            </tr>
+            <tr><td bgcolor="orangered"> port(u) </td></tr>
+            <tr><td bgcolor="orangered"> protocol</td></tr>
+            <tr><td> direction(dir) </td></tr>
+            </table>>];
+  
+
+
+  tunple_rep_1 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green" colspan="3"> ct1_rep-nf_conntrack_tuple_hash </td></tr>
+            <tr > <td PORT="f1" colspan="3"> hnode </td></tr>
+            <tr > 
+              <td PORT="f2" rowspan="7" > tunple </td>
+              <td PORT="f3" rowspan="3" > src </td>
+              <td bgcolor="magenta"> src_ip(u3) </td>
+            </tr>
+            <tr><td bgcolor="magenta"> port(u) </td> </tr>
+            <tr><td bgcolor="magenta"> protocol(l3num)</td> </tr>
+            <tr>
+              <td PORT="f3" rowspan="4" > dst </td>
+              <td> dst_ip(u3) </td>
+            </tr>
+            <tr><td> port(u) </td></tr>
+            <tr><td> protocol</td></tr>
+            <tr><td> direction(dir) </td></tr>
+            </table>>];
+
+  ct1:fext -> conn_ext:f0;
+  ct2:fext -> conn_ext:f0;
+  ct3:fext -> conn_ext:f0;
+  conn_ext:data->conn_ext:offset_stat;
+  conn_ext:offset_stat->conn_stat_ext:f0;
+
+  
+  conn_ext [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green"> conn_ext </td></tr>
+            <tr><td> offset[0]</td></tr>
+            <tr><td> ... </td></tr>
+            <tr><td PORT="offset_stat" bgcolor="orangered"> offset[NF_CT_EXT_STAT]</td></tr>
+            <tr><td> offset[NF_CT_EXT_NUM]</td></tr>
+            <tr><td> len </td></tr>
+            <tr><td PORT="data"> data </td></tr>
+            </table>>];
+
+  conn_stat_ext [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green"> conn_stat_ext </td></tr>
+            <tr><td> hookbmp </td></tr>
+            <tr><td PORT="ext_list"> ext_list </td></tr>
+            </table>>];
+
+  match_port_hnode [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green"> protocol-hnode</td></tr>
+            <tr><td PORT="hnode"> hnode </td></tr>
+            <tr><td PORT="ext_list"> ext_list </td></tr>
+            <tr><td> hook </td></tr>
+            <tr><td> refcnt</td></tr>
+            <tr><td> counter </td></tr>
+            <tr><td> hlist_key(0) </td></tr>
+            <tr><td PORT="phlist"> phlist </td></tr>
+            <tr><td> len (port_len)</td></tr>
+            <tr><td> data (port) </td></tr>
+            </table>>];
+
+  match_port_hlist [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr><td PORT="f0" bgcolor="green"> lv2-port-hlist </td></tr>
+            <tr><td PORT="h0"> hlist[0] </td></tr>
+            <tr><td PORT="h1"> hlist[1] </td></tr>
+            <tr><td PORT="hx"> ... </td></tr>
+            <tr><td PORT="hn"> hlist[n]</td></tr>
+            </table>>];
+
+
+
+  match_proto_hnode [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green"> protocol-hnode</td></tr>
+            <tr><td PORT="hnode"> hnode </td></tr>
+            <tr><td PORT="ext_list"> ext_list </td></tr>
+            <tr><td> hook </td></tr>
+            <tr><td> refcnt</td></tr>
+            <tr><td> counter </td></tr>
+            <tr><td> hlist_key(port) </td></tr>
+            <tr><td PORT="phlist"> phlist </td></tr>
+            <tr><td> len (protocol_len)</td></tr>
+            <tr><td> data (protocol) </td></tr>
+            </table>>];
+  match_proto_hlist [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr><td PORT="f0" bgcolor="green"> lv1-proto-hlist </td></tr>
+            <tr><td PORT="h0"> hlist[0] </td></tr>
+            <tr><td PORT="h1"> hlist[1] </td></tr>
+            <tr><td PORT="hx"> ... </td></tr>
+            <tr><td PORT="hn"> hlist[n]</td></tr>
+            </table>>];
+
+  match_dstip_hnode [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green"> dst_ip-hnode</td></tr>
+            <tr><td PORT="hnode"> hnode </td></tr>
+            <tr><td PORT="ext_list"> ext_list </td></tr>
+            <tr><td> hook </td></tr>
+            <tr><td> refcnt</td></tr>
+            <tr><td> counter </td></tr>
+            <tr><td> hlist_key(prococol) </td></tr>
+            <tr><td PORT="phlist"> phlist </td></tr>
+            <tr><td> len (ip_len)</td></tr>
+            <tr><td> data (dst_ip) </td></tr>
+
+            </table>>];
+
+  match_dstip_hlist [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr><td PORT="f0" bgcolor="green"> lv0-hlist </td></tr>
+            <tr><td PORT="h0"> hlist[0] </td></tr>
+            <tr><td PORT="h1"> hlist[1] </td></tr>
+            <tr><td PORT="hx"> ... </td></tr>
+            <tr><td PORT="hn"> hlist[n]</td></tr>
+            </table>>];
+
+  match1 [label=< <table border="0" cellborder="1"  cellspacing="0">
+            <tr > <td PORT="f0" bgcolor="green" colspan="3"> match:dst_ip-protocol-port </td></tr>
+            <tr><td> domain (d_dst_ip|d_protocol|port)</td></tr>
+            <tr><td> dm_list (d_dst_ip|d_protocol|port)</td></tr>
+            <tr><td> hlist_key (d_dst_ip)</td></tr>
+            <tr><td PORT="phlist"> phlist </td></tr>
+            </table>>];
+
+}
+
